@@ -1,0 +1,43 @@
+package com.klef.fsad.exam;
+
+import org.hibernate.*;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.query.Query;
+
+import java.util.Date;
+
+public class ClientDemo {
+
+    public static void main(String[] args) {
+
+        SessionFactory factory = new Configuration().configure().buildSessionFactory();
+        Session session = factory.openSession();
+
+        Transaction tx = session.beginTransaction();
+
+    
+        Service s = new Service();
+        s.setId(1);
+        s.setName("Cleaning");
+        s.setDate(new Date());
+        s.setStatus("Pending");
+
+        session.save(s);
+
+
+        String hql = "update Service set name=:name, status=:status where id=:id";
+
+        Query query = session.createQuery(hql);
+        query.setParameter("name", "Repair");
+        query.setParameter("status", "Completed");
+        query.setParameter("id", 1);
+
+        int rows = query.executeUpdate();
+
+        System.out.println("Rows Updated: " + rows);
+
+        tx.commit();
+        session.close();
+        factory.close();
+    }
+}
